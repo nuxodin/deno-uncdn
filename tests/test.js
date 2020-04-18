@@ -1,0 +1,30 @@
+import {serve} from "https://deno.land/std/http/server.ts";
+import {Uncdn} from "../main.js";
+
+var cacheDir = await Deno.makeTempDir({prefix:'uncdn_test'});
+var uncdn = new Uncdn({
+    dir: cacheDir,
+});
+
+for await (let req of serve(":93")) {
+    var found = await uncdn.serve(req);
+    if (!found) {
+        const headers = new Headers();
+        headers.set("content-type", "text/html; charset=utf-8");
+        req.respond({
+            headers: headers,
+            body:`
+            <!DOCTYPE html>
+            <html lang="en">
+                <head>
+                    <script type=module>
+                        import {render, html, svg} from '${uncdn.cdn2url('https://unpkg.com/uhtml@1.10.0/esm/index.js?module')}';
+                        render(document.body, html\`<h1>Hello 👋 uncdn</h1>\`);
+                    </script>
+                <body>
+                reload some times to wait for files copied from cdn
+                </body>
+            </html>`
+        })
+    }
+}
