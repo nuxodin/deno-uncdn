@@ -1,9 +1,8 @@
 import {serve} from "https://deno.land/std/http/server.ts";
 import {Uncdn} from "../main.js";
 
-var cacheDir = await Deno.makeTempDir({prefix:'uncdn_test'});
 var uncdn = new Uncdn({
-    dir: cacheDir,
+    dir: await Deno.makeTempDir({prefix:'uncdn_test'}),
 });
 
 for await (let req of serve(":93")) {
@@ -18,7 +17,7 @@ for await (let req of serve(":93")) {
             <html lang="en">
                 <head>
                     <script type=module>
-                        import {render, html, svg} from '${uncdn.cdn2url('https://unpkg.com/uhtml@1.10.0/esm/index.js?module')}';
+                        import {render, html, svg} from '${uncdn.url('https://unpkg.com/uhtml@1.10.0/esm/index.js?module')}';
                         render(document.body, html\`<h1>Hello 👋 uncdn</h1>\`);
                     </script>
                 <body>
