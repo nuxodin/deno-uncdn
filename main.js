@@ -22,7 +22,6 @@ export class Uncdn {
             await this._ensure(cdnUrl) // dangerous!!!!
             return false;
         }
-
     }
 
     /* private */
@@ -30,7 +29,6 @@ export class Uncdn {
         var path = this._path(url);
         try {
             await Deno.stat(path);
-            return path;
         } catch (e) { // not found
             const response = await fetch(url);
             let contents = await response.text();
@@ -43,9 +41,7 @@ export class Uncdn {
                 return $1 + this.url($2) + $3;
             });
             /* */
-
             Deno.writeFile(path, new TextEncoder().encode(contents) );
-            return path;
         }
     }
     _path(url) {
