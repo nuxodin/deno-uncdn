@@ -5,9 +5,29 @@ export class Uncdn {
         this.dir = options.dir;
         this.rootUrl = options.rootUrl || '/uncdn/';
     }
+    url(url) {
+        this._ensure(url);
+        return this.rootUrl+url;
+    }
+    async serve(req) {
+        if (!req.url.startsWith(this.rootUrl)) return false;
+        const cdnUrl = req.url.substr(this.rootUrl.length);
+        try {
+            var path = this._path(cdnUrl);
+            const response = await serveFile(req, path);
+            response.headers.set("content-type", 'text/javascript');
+            req.respond(response);
+            return true;
+        } catch (e) { // not found
+            await this._ensure(cdnUrl) // dangerous!!!!
+            return false;
+        }
 
-    async cdn2path(url){
-        var path = this.path(url);
+    }
+
+    /* private */
+    async _ensure(url){
+        var path = this._path(url);
         try {
             await Deno.stat(path);
             return path;
@@ -28,26 +48,7 @@ export class Uncdn {
             return path;
         }
     }
-    url(url) {
-        this.cdn2path(url);
-        return this.rootUrl+url;
-    }
-    path(url) {
+    _path(url) {
         return this.dir + '/' + encodeURIComponent(url); // is it save to use encodeURIComponent?
-    }
-    async serve(req) {
-        if (!req.url.startsWith(this.rootUrl)) return false;
-        const cdnUrl = req.url.substr(this.rootUrl.length);
-        try {
-            var path = this.path(cdnUrl);
-            const response = await serveFile(req, path);
-            response.headers.set("content-type", 'text/javascript');
-            req.respond(response);
-            return true;
-        } catch (e) { // not found
-            await this.cdn2path(cdnUrl) // dangerous!!!!
-            return false;
-        }
-
     }
 }
