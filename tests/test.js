@@ -1,11 +1,11 @@
-import {serve} from "https://deno.land/std/http/server.ts";
+import {serve} from "https://deno.land/std@v0.42.0/http/server.ts";
 import {Uncdn} from "../main.js";
 
 var uncdn = new Uncdn({
     dir: await Deno.makeTempDir({prefix:'uncdn_test'}),
 });
 
-for await (let req of serve(":93")) {
+for await (let req of serve(":94")) {
     var found = await uncdn.serve(req);
     if (!found) {
         const headers = new Headers();

@@ -1,0 +1,6 @@
+{
+    "deno.enable": true,
+    "zzz[typescript]": {
+        "editor.defaultFormatter": "axetroy.vscode-deno",
+    },
+}
