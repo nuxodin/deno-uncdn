@@ -2,8 +2,10 @@ import {serve} from "https://deno.land/std@v0.42.0/http/server.ts";
 import {Uncdn} from "../main.js";
 
 var uncdn = new Uncdn({
-    dir: await Deno.makeTempDir({prefix:'uncdn_test'}),
+    cacheDir: await Deno.makeTempDir({prefix:'uncdn_test'}),
 });
+
+console.log('server on port 94');
 
 for await (let req of serve(":94")) {
     var found = await uncdn.serve(req);
